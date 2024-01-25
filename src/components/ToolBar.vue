@@ -1,7 +1,7 @@
 <template>
-  <v-container class="toolbar">
+  <v-toolbar extended class="toolbar d-flex">
     <AddButton></AddButton>
-  </v-container>
+  </v-toolbar>
 </template>
 
 <script lang="ts">
@@ -23,6 +23,5 @@ export default defineComponent({
 .toolbar {
   background-color: lightblue;
   width: 100%;
-  position: fixed;
 }
 </style>
