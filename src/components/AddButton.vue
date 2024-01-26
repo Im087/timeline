@@ -1,8 +1,8 @@
 <template>
-  <v-btn @click="showEventForm()">
+  <v-btn>
     Add
     <v-dialog
-      v-model="dialog"
+      v-model="isDialogShown"
       activator="parent"
       width="auto"
     >
@@ -17,11 +17,13 @@
                 <v-text-field
                   label="Title*"
                   required
+                  v-model="TLItem.eventTitle"
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-textarea
                   label="Description"
+                  v-model="TLItem.eventDescription"
                 ></v-textarea>
               </v-col>
               <v-col cols="12" md="6" class="flex-column">
@@ -34,6 +36,7 @@
                     <v-text-field
                       label="Year*"
                       required
+                      v-model="startYear"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -42,6 +45,7 @@
                   >
                     <v-text-field
                       label="Month"
+                      v-model="startMonth"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -50,6 +54,7 @@
                   >
                     <v-text-field
                       label="Day"
+                      v-model="startDay"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -64,6 +69,7 @@
                     <v-text-field
                       label="Year*"
                       required
+                      v-model="endYear"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -72,6 +78,7 @@
                   >
                     <v-text-field
                       label="Month"
+                      v-model="endMonth"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -80,6 +87,7 @@
                   >
                     <v-text-field
                       label="Day"
+                      v-model="endDay"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -91,6 +99,7 @@
                 <v-text-field
                   label="Tags"
                   hint="Separate tags with comma"
+                  v-model="tagsInString"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -102,14 +111,14 @@
           <v-btn
             color="blue-darken-1"
             variant="text"
-            @click="dialog = false"
+            @click="isDialogShown = false"
           >
             Close
           </v-btn>
           <v-btn
             color="blue-darken-1"
             variant="text"
-            @click="dialog = false"
+            @click="isDialogShown = false; addEvent()"
           >
             Save
           </v-btn>
@@ -120,22 +129,61 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, type Ref, reactive } from 'vue';
+
+import type { TLItem } from '../interfaces';
+import { computed } from 'vue';
+import store from '@/store';
 
 export default defineComponent({
   name: 'AddButton',
   setup() {
-    const dialog = ref(false);
+    const isDialogShown = ref(false);
     const isPeriod = ref(false);
-    const showEventForm = () => {
-      console.log('showEventForm');
-
-    };
+    const startYear = ref('');
+    const startMonth = ref('01');
+    const startDay = ref('01');
+    const startTime = computed(() => {
+      return `${startYear.value}-${startMonth.value}-${startDay.value}`;
+    });
+    const endYear = ref('');
+    const endMonth = ref('01');
+    const endDay = ref('01');
+    const endTime = computed(() => {
+      return `${endYear.value}-${endMonth.value}-${endDay.value}`;
+    });
+    const tagsInString = ref('');
+    const tagsInArray = computed(() => {
+      // todo: last letter missing
+      return tagsInString.value.split(",");
+    });
+    const TLItem: TLItem = reactive({
+      eventTitle: '',
+      eventDescription: '',
+      isPeriod,
+      startTime,
+      endTime,
+      tags: tagsInArray,
+    });
+    const addEvent = () => {
+      console.log('saveEvent');
+      console.log(TLItem);
+      let item = Object.assign({}, TLItem);
+      store.dispatch('addTLItem', item);
+    }
 
     return {
-      dialog,
+      isDialogShown,
       isPeriod,
-      showEventForm,
+      startYear,
+      startMonth,
+      startDay,
+      endYear,
+      endMonth,
+      endDay,
+      tagsInString,
+      TLItem,
+      addEvent,
     }
   }
 });
