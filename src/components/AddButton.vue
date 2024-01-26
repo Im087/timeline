@@ -129,10 +129,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type Ref, reactive } from 'vue';
+import { defineComponent, ref, reactive, computed } from 'vue';
 
-import type { TLItem } from '../interfaces';
-import { computed } from 'vue';
+import type { TLItem } from '@/interfaces';
 import store from '@/store';
 
 export default defineComponent({
@@ -158,16 +157,23 @@ export default defineComponent({
       return tagsInString.value.split(",");
     });
     const TLItem: TLItem = reactive({
+      id: '',
       eventTitle: '',
       eventDescription: '',
       isPeriod,
+      startYear,
+      startMonth,
+      startDay,
       startTime,
+      endYear,
+      endMonth,
+      endDay,
       endTime,
-      tags: tagsInArray,
+      tagsInString,
+      tagsInArray,
     });
     const addEvent = () => {
-      console.log('saveEvent');
-      console.log(TLItem);
+      TLItem.id = new Date().toISOString();
       let item = Object.assign({}, TLItem);
       store.dispatch('addTLItem', item);
     }

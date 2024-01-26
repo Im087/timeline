@@ -1,14 +1,23 @@
 <template>
   <div class="app d-flex flex-column">
     <ToolBar></ToolBar>
-    <Event></Event>
+    <Event
+      v-for="item in TLItems"
+      :key="item.id"
+      :TLItem="item"
+    >
+    {{ TLItems[0] }}
+    </Event>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed, type ComputedRef } from 'vue';
 import ToolBar from './components/ToolBar.vue';
 import Event from './components/Event.vue';
+import store from '@/store';
+
+import type { TLItem } from '@/interfaces';
 
 export default defineComponent({
   name: 'App',
@@ -17,7 +26,13 @@ export default defineComponent({
     Event
   },
   setup() {
+    const TLItems :ComputedRef<TLItem[]> = computed(() => {
+      return store.getters.getTLItems;
+    });
 
+    return {
+      TLItems,
+    }
   }
 });
 </script>
