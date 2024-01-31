@@ -8,8 +8,8 @@ export const getters = {
 };
 
 export const actions = {
-  addTLItem({ commit }, item: TLItem) {
-    commit('ADD_TL_ITEM', item);
+  saveTLItem({ commit }, item: TLItem) {
+    commit('SAVE_TL_ITEM', item);
   },
   deleteTLItem({ commit }, id: string) {
     commit('DELETE_TL_ITEM', id);
@@ -17,11 +17,12 @@ export const actions = {
 };
 
 export const mutations = {
-  ADD_TL_ITEM(state: State, item: TLItem) {
-    state.TLItems.push(item);
+  SAVE_TL_ITEM(state: State, item: TLItem) {
+    let index = state.TLItems.findIndex(i => i.id === item.id);
+    index === -1 ? state.TLItems.push(item) : state.TLItems.splice(index, 1, item);
   },
   DELETE_TL_ITEM(state: State, id: string) {
-    let index = state.TLItems.findIndex(item => item.id === id);
+    let index = state.TLItems.findIndex(i => i.id === id);
     state.TLItems.splice(index, 1);
   }
 };

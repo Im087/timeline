@@ -116,7 +116,7 @@
         <v-btn
           color="blue-darken-1"
           variant="text"
-          @click="isDialogShown = false; addEvent()"
+          @click="isDialogShown = false; saveTLItem()"
         >
           Save
         </v-btn>
@@ -135,15 +135,16 @@ const props = defineProps({
   TLItem: {
     type: Object as PropType<TLItem>,
     required: true,
+    deep: true
   }
 });
 
-const addEvent = () => {
+const saveTLItem = () => {
   props.TLItem.startTime = `${props.TLItem.startYear}-${props.TLItem.startMonth}-${props.TLItem.startDay}`;
   props.TLItem.endTime = `${props.TLItem.endYear}-${props.TLItem.endMonth}-${props.TLItem.endDay}`;
   props.TLItem.tagsInArray = props.TLItem.tagsInString.split(",");
   props.TLItem.id = new Date().toISOString();
   let item = Object.assign({}, props.TLItem);
-  store.dispatch('addTLItem', item);
-}
+  store.dispatch('saveTLItem', item);
+};
 </script>
