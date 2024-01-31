@@ -6,7 +6,10 @@
     >
       <v-card-item>
         <v-card-title>{{ TLItem.eventTitle }}</v-card-title>
-        <v-card-subtitle>{{ TLItem.startTime }} ~ {{ TLItem.endTime }}</v-card-subtitle>
+        <v-card-subtitle>
+          {{ TLItem.startTime }} 
+          <span v-show="TLItem.isPeriod">~ {{ TLItem.endTime }}</span>
+        </v-card-subtitle>
         <v-card-text>{{ TLItem.eventDescription }}</v-card-text>
         <v-layout class="d-flex flex-wrap">
           <v-btn
@@ -14,15 +17,19 @@
             :key="item"
             variant="tonal"
             rounded="xl"
+            prepend-icon="mdi-pound"
             class="text-none mr-2 mb-2"
           >
-            <v-icon icon="mdi-pound"></v-icon>{{ item }}
+            {{ item }}
           </v-btn>
         </v-layout>
       </v-card-item>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn @click="editTLItem">
+        <v-btn
+          variant="flat"
+          color="yellow-darken-1"
+        >
           Edit
           <EventForm
             v-model:isDialogShown="isDialogShown"
@@ -30,7 +37,11 @@
           >
           </EventForm>
         </v-btn>
-        <v-btn @click="deleteTLItem">
+        <v-btn
+          variant="flat"
+          color="red-darken-1"
+          @click="deleteTLItem"
+        >
           Delete
         </v-btn>
       </v-card-actions>
@@ -39,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType, toRefs, ref, computed } from 'vue';
+import { defineComponent, type PropType, toRefs, ref } from 'vue';
 import { type TLItem } from '@/interfaces';
 import store from '@/store';
 
@@ -60,9 +71,7 @@ export default defineComponent({
   setup(props) {
     const TLItem = toRefs(props).TLItem;
     const isDialogShown = ref(false);
-    const editTLItem = () => {
-      console.log('editTLItem');
-    };
+
     const deleteTLItem = () => {
       store.dispatch('deleteTLItem', TLItem.value.id);
     };
@@ -70,7 +79,6 @@ export default defineComponent({
     return {
       TLItem,
       isDialogShown,
-      editTLItem,
       deleteTLItem
     }
   }

@@ -58,7 +58,7 @@
               </v-row>
             </v-col>
             <v-col cols="12" md="6" class="flex-column" v-show="TLItem.isPeriod">
-              <span class="text-body-1" v-show="TLItem.isPeriod">To</span>
+              <span class="text-body-1">To</span>
               <v-row>
                 <v-col
                   cols="12"
@@ -108,14 +108,14 @@
         <v-spacer></v-spacer>
         <v-btn
           color="blue-darken-1"
-          variant="text"
+          variant="flat"
           @click="isDialogShown = false"
         >
           Close
         </v-btn>
         <v-btn
-          color="blue-darken-1"
-          variant="text"
+          color="green-darken-1"
+          variant="flat"
           @click="isDialogShown = false; saveTLItem()"
         >
           Save
@@ -126,7 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, type PropType, toRefs } from 'vue';
+import { type PropType } from 'vue';
 import { type TLItem } from '@/interfaces';
 import store from '@/store';
 
@@ -140,9 +140,11 @@ const props = defineProps({
 });
 
 const saveTLItem = () => {
+  props.TLItem.startMonth = props.TLItem.startMonth ? props.TLItem.startMonth : '01';
+  props.TLItem.startDay = props.TLItem.startDay ? props.TLItem.startDay : '01';
   props.TLItem.startTime = `${props.TLItem.startYear}-${props.TLItem.startMonth}-${props.TLItem.startDay}`;
   props.TLItem.endTime = `${props.TLItem.endYear}-${props.TLItem.endMonth}-${props.TLItem.endDay}`;
-  props.TLItem.tagsInArray = props.TLItem.tagsInString.split(",");
+  props.TLItem.tagsInArray = props.TLItem.tagsInString.split(',');
   props.TLItem.id = new Date().toISOString();
   let item = Object.assign({}, props.TLItem);
   store.dispatch('saveTLItem', item);
