@@ -8,6 +8,17 @@
         <v-card-title>{{ TLItem.eventTitle }}</v-card-title>
         <v-card-subtitle>{{ TLItem.startTime }} ~ {{ TLItem.endTime }}</v-card-subtitle>
         <v-card-text>{{ TLItem.eventDescription }}</v-card-text>
+        <v-layout class="d-flex flex-wrap">
+          <v-btn
+            v-for="item in TLItem.tagsInArray"
+            :key="item"
+            variant="tonal"
+            rounded="xl"
+            class="text-none mr-2 mb-2"
+          >
+            <v-icon icon="mdi-pound"></v-icon>{{ item }}
+          </v-btn>
+        </v-layout>
       </v-card-item>
       <v-card-actions>
         <v-spacer></v-spacer>
