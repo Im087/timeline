@@ -205,7 +205,7 @@ const saveTLItem = () => {
   props.TLItem.tagsInArray = props.TLItem.tagsInString.split(',').filter((tag) => tag && tag.trim());
   props.TLItem.tagsInArray.forEach((tag, index, arr) => arr[index] = tag.trim());
   props.TLItem.tagsInString = props.TLItem.tagsInArray.join(', ');
-  props.TLItem.id = props.TLItem.id ? props.TLItem.id : new Date().toISOString();
+  props.TLItem.id = new Date().toISOString();
   let item = Object.assign({}, props.TLItem);
   store.dispatch('saveTLItem', item);
 };
