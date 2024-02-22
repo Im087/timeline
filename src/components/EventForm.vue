@@ -148,13 +148,14 @@
 </template>
 
 <script setup lang="ts">
-import { type PropType, computed } from 'vue';
+import { type PropType, type ModelRef, computed, reactive, watch } from 'vue';
 import { type TLItem } from '@/interfaces';
 import store from '@/store';
+import { emptyItem } from '@/consts';
 import { useVuelidate } from '@vuelidate/core';
 import { required, numeric, maxValue, requiredIf } from '@vuelidate/validators';
+import { useVueFlow } from '@vue-flow/core';
 
-const isDialogShown = defineModel('isDialogShown');
 const props = defineProps({
   TLItem: {
     type: Object as PropType<TLItem>,
@@ -162,6 +163,21 @@ const props = defineProps({
     deep: true
   }
 });
+let TLItem: TLItem = reactive(Object.assign({}, props.TLItem));
+const isDialogShown: ModelRef<boolean | undefined> = defineModel('isDialogShown');
+watch(isDialogShown, (newValue) => {
+  if(newValue) {
+    for (let key in TLItem) {
+      TLItem[key] = props.TLItem[key];
+    }
+  } else {
+    for (let key in TLItem) {
+      TLItem[key] = emptyItem[key];
+    }
+    v$.value.$reset();
+  }
+});
+
 const rules = computed(() => {
   return {
     eventTitle: {
@@ -180,7 +196,7 @@ const rules = computed(() => {
       maxValue: maxValue(31)
     },
     endYear: {
-      requiredIfIsPeriod: requiredIf(props.TLItem.isPeriod),
+      requiredIfIsPeriod: requiredIf(TLItem.isPeriod),
       numeric
     },
     endMonth: {
@@ -193,20 +209,60 @@ const rules = computed(() => {
     },
   }
 });
-const v$ = useVuelidate(rules, props.TLItem);
+const v$ = useVuelidate(rules, TLItem);
 
+const { addNodes, findNode } = useVueFlow();
+const generateNode = (data: TLItem) => {
+  return {
+    id: data.id,
+    type: 'event',
+    position: { x: Math.random() * 500, y: Math.random() * 500 },
+    data: data
+  }
+};
+const addNode = (data: TLItem) => {
+  addNodes(generateNode(data));
+};
+const updateNode = (id: string) => {
+  const targetNode = findNode(id);
+  for (const key in targetNode?.data) {
+    targetNode.data[key] = TLItem[key];
+  }
+};
+
+const generateStartTime = () => {
+  TLItem.startMonth = TLItem.startMonth ? TLItem.startMonth : '01';
+  TLItem.startDay = TLItem.startDay ? TLItem.startDay : '01';
+  TLItem.startTime = `${TLItem.startYear}-${TLItem.startMonth}-${TLItem.startDay}`;
+};
+const generateEndTime = () => {
+  TLItem.endMonth = TLItem.isPeriod ? (TLItem.endMonth ? TLItem.endMonth : '01') : '';
+  TLItem.endDay = TLItem.isPeriod ? (TLItem.endDay ? TLItem.endDay : '01') : '';
+  TLItem.endTime = TLItem.isPeriod ? `${TLItem.endYear}-${TLItem.endMonth}-${TLItem.endDay}` : '';
+};
+const generateTags = () => {
+  TLItem.tagsInArray = TLItem.tagsInString.split(',').filter((tag) => tag && tag.trim());
+  TLItem.tagsInArray.forEach((tag, index, arr) => arr[index] = tag.trim());
+  TLItem.tagsInString = TLItem.tagsInArray.join(', ');
+};
 const saveTLItem = () => {
-  props.TLItem.startMonth = props.TLItem.startMonth ? props.TLItem.startMonth : '01';
-  props.TLItem.startDay = props.TLItem.startDay ? props.TLItem.startDay : '01';
-  props.TLItem.startTime = `${props.TLItem.startYear}-${props.TLItem.startMonth}-${props.TLItem.startDay}`;
-  props.TLItem.endMonth = props.TLItem.isPeriod ? (props.TLItem.endMonth ? props.TLItem.endMonth : '01') : '';
-  props.TLItem.endDay = props.TLItem.isPeriod ? (props.TLItem.endDay ? props.TLItem.endDay : '01') : '';
-  props.TLItem.endTime = props.TLItem.isPeriod ? `${props.TLItem.endYear}-${props.TLItem.endMonth}-${props.TLItem.endDay}` : '';
-  props.TLItem.tagsInArray = props.TLItem.tagsInString.split(',').filter((tag) => tag && tag.trim());
-  props.TLItem.tagsInArray.forEach((tag, index, arr) => arr[index] = tag.trim());
-  props.TLItem.tagsInString = props.TLItem.tagsInArray.join(', ');
-  props.TLItem.id = new Date().toISOString();
-  let item = Object.assign({}, props.TLItem);
-  store.dispatch('saveTLItem', item);
+  generateStartTime();
+  generateEndTime();
+  generateTags();
+
+  if (TLItem.id) {
+    let item = Object.assign({}, TLItem);
+    updateNode(TLItem.id);
+
+    store.dispatch('updateTLItem', item);
+    store.dispatch('updateGraphElement', item);
+  } else {
+    TLItem.id = new Date().toISOString();
+    let item = Object.assign({}, TLItem);
+    addNode(item);
+
+    store.dispatch('addTLItem', item);
+    store.dispatch('addGraphElement', generateNode(item));
+  }
 };
 </script>

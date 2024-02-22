@@ -1,3 +1,5 @@
+import type { Elements } from "@vue-flow/core";
+
 export interface TLItem {
   id: string,
   eventTitle: string,
@@ -16,5 +18,6 @@ export interface TLItem {
 };
 
 export interface State {
-  TLItems: TLItem[]
+  TLItems: TLItem[],
+  graphElements: Elements
 };

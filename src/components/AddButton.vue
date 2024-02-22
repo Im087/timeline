@@ -9,39 +9,28 @@
   </v-btn>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue';
+import type { TLItem } from '@/interfaces';
 
 import EventForm from './EventForm.vue';
+import { reactive } from 'vue';
 
-export default defineComponent({
-  name: 'AddButton',
-  components: {
-    EventForm,
-  },
-  setup() {
-    const isDialogShown = ref(false);
-    const TLItem = ref({
-      id: '',
-      eventTitle: '',
-      eventDescription: '',
-      isPeriod: false,
-      startYear: '',
-      startMonth: '',
-      startDay: '',
-      startTime: '',
-      endYear: '',
-      endMonth: '',
-      endDay: '',
-      endTime: '',
-      tagsInString: '',
-      tagsInArray: [],
-    });
-
-    return {
-      isDialogShown,
-      TLItem,
-    }
-  }
+const isDialogShown = ref(false);
+const TLItem: TLItem = reactive({
+  id: '',
+  eventTitle: '',
+  eventDescription: '',
+  isPeriod: false,
+  startYear: '',
+  startMonth: '',
+  startDay: '',
+  startTime: '',
+  endYear: '',
+  endMonth: '',
+  endDay: '',
+  endTime: '',
+  tagsInString: '',
+  tagsInArray: [],
 });
 </script>
